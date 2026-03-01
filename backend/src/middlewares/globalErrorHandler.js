@@ -4,7 +4,7 @@ const globalErrorHandler = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
 
   res.status(statusCode).json({
-    success: false,
+    success: err.success,
     message: err.message || "Internal Server Error",
     stack: config.env === "production" ? undefined : err.stack,
   });

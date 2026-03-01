@@ -5,6 +5,8 @@ import createHttpError from "http-errors";
 import ApiResponse from "../utils/ApiResponse.js";
 import redisClient from "../config/redis.js";
 import { User } from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const sanitizedBody = sanitize(req.body);
@@ -44,6 +46,28 @@ export const registerUser = asyncHandler(async (req, res, next) => {
       message: "Too many requests, try again later",
     });
   }
+
+  //check existing user
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(createHttpError(400, "User already exists"));
+  }
+
+  //passsword hashing
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  //generate verify token
+  const verifyToken = crypto.randomBytes(32).toString("hex");
+
+  //generate verify key
+  const verifyKey = `verify:${verifyToken}`;
+
+  //data to store in redis
+  const dataToStore = JSON.stringify({
+    name,
+    email,
+    password: hashedPassword,
+  });
 
   return res
     .status(201)

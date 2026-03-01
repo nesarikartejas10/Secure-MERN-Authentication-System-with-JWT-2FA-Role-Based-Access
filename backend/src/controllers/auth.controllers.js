@@ -3,6 +3,8 @@ import { registerUserSchema } from "../validators/user.validation.js";
 import sanitize from "mongo-sanitize";
 import createHttpError from "http-errors";
 import ApiResponse from "../utils/ApiResponse.js";
+import redisClient from "../config/redis.js";
+import { User } from "../models/user.model.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const sanitizedBody = sanitize(req.body);
@@ -31,6 +33,17 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   }
 
   const { name, email, password } = validation.data;
+
+  //generate unique rate limit key for combine ip and email
+  const rateLimitKey = `register-rate-limit:${req.ip}:${email}`;
+
+  //fetch current request count
+  if (await redisClient.get(rateLimitKey)) {
+    return res.status(429).json({
+      success: false,
+      message: "Too many requests, try again later",
+    });
+  }
 
   return res
     .status(201)

@@ -7,6 +7,8 @@ import redisClient from "../config/redis.js";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
+import { sendMail } from "../utils/sendMail.js";
+import { getVerifyEmailHtml } from "../utils/emailTemplates.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const sanitizedBody = sanitize(req.body);
@@ -71,7 +73,20 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
   await redisClient.set(verifyKey, dataToStore, { EX: 5 * 60 });
 
+  const subject = "Verify your email for account creation";
+  const html = getVerifyEmailHtml({ email, token: verifyToken });
+
+  await sendMail({ email, subject, html });
+
+  await redisClient.set(rateLimitKey, "true", { EX: 60 });
+
   return res
     .status(201)
-    .json(new ApiResponse(201, { name, email }, "User Register successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        { name, email },
+        "If your email is valid, a verification link has been sent to your email. It will expire in 5 minutes",
+      ),
+    );
 });

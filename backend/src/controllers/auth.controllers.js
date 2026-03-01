@@ -62,12 +62,14 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   //generate verify key
   const verifyKey = `verify:${verifyToken}`;
 
-  //data to store in redis
+  //data to store in redis for 5 min
   const dataToStore = JSON.stringify({
     name,
     email,
     password: hashedPassword,
   });
+
+  await redisClient.set(verifyKey, dataToStore, { EX: 5 * 60 });
 
   return res
     .status(201)

@@ -10,6 +10,7 @@ const _config = {
   mailUser: process.env.MAIL_USER,
   mailPass: process.env.MAIL_PASS,
   redisURL: process.env.REDIS_URL,
+  appName: process.env.APP_NAME,
 };
 
 export const config = Object.freeze(_config);

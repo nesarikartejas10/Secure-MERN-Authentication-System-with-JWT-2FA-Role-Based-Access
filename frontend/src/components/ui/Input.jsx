@@ -21,12 +21,12 @@ const Input = ({
           {...props}
         />
         {showPassword ? (
-          <FaRegEyeSlash
+          <FaRegEye
             className="absolute top-3 right-2.5 text-md cursor-pointer text-gray-500"
             onClick={() => setShowPassword(!showPassword)}
           />
         ) : (
-          <FaRegEye
+          <FaRegEyeSlash
             className="absolute top-3 right-2.5 text-md cursor-pointer text-gray-500"
             onClick={() => setShowPassword(!showPassword)}
           />

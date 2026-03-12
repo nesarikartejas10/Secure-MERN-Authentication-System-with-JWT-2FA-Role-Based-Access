@@ -38,9 +38,6 @@ const Login = () => {
                 className="text-sm text-black font-medium mb-1.5 block"
                 value="Password"
               />
-              <p className="text-xs font-semibold mb-1.5 text-blue-600">
-                Forgot Password?
-              </p>
             </div>
 
             <Input
@@ -49,11 +46,6 @@ const Login = () => {
               id="password"
               className="w-full border border-gray-400 text-base px-3 py-2 leading-normal rounded-lg bg-white"
             />
-          </div>
-
-          <div className="flex items-center gap-1.5 mt-2">
-            <Input type="checkbox" className="scale-110" />
-            <span className="text-sm text-gray-500">Remember Me</span>
           </div>
 
           <div className="w-full mt-5">

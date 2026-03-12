@@ -6,6 +6,7 @@ import Register from "./pages/auth/Register";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import Verify from "./pages/auth/Verify";
 import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   const isAuth = true;
@@ -13,6 +14,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={isAuth ? <Home /> : <Login />} />
+        <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Login />} />
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

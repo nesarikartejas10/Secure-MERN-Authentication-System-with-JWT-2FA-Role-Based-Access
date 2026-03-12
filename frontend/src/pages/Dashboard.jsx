@@ -16,7 +16,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <nav className="w-full bg-white border-b border-gray-200 shadow-sm px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold text-blue-600">Dashboard</h1>
+          <h1 className="text-xl font-bold text-blue-600">Admin Dashboard</h1>
           <button
             onClick={handleLogout}
             className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors duration-150 cursor-pointer"

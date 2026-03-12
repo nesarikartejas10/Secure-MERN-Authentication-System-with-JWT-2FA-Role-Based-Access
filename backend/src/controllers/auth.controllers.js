@@ -1,8 +1,9 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import createHttpError from "http-errors";
 import redisClient from "../config/redis.js";
-import { User } from "../routes/auth.routes.js";
+import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.validatedData;
@@ -27,6 +28,16 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
   //password hashing
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  //create token
+  const verifyToken = crypto.randomBytes(32).toString("hex");
+
+  //create verify key
+  const verifyKey = `verify:${verifyToken}`;
+
+  //data to store in redis
+  const dataToStore = JSON.stringify({ name, email, password: hashedPassword });
+  await redisClient(verifyKey, dataToStore, { EX: 5 * 60 }); //5min
 
   return res.status(201).json({
     success: true,

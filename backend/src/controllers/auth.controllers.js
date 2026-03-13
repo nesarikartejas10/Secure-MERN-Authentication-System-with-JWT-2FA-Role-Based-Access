@@ -96,4 +96,11 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
 
 export const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.validatedData;
+
+  const rateLimitKey = `login-rate-limit:${req.ip}:${email}`;
+  if (await redisClient.get(rateLimitKey)) {
+    return next(
+      createHttpError(429, "Too many requests! Please try again later"),
+    );
+  }
 });

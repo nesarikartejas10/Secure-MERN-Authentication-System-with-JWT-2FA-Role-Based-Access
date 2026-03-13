@@ -37,7 +37,7 @@ export const getOtpHtml = ({ email, otp }) => {
               </table>
 
               <p style="margin:0 0 10px 0;font-size:14px;color:#555;">
-                This code will expire in <strong>5 minutes</strong>.
+                This otp will expire in <strong>5 minutes</strong>.
               </p>
 
               <p style="margin:0;font-size:14px;color:#555;">

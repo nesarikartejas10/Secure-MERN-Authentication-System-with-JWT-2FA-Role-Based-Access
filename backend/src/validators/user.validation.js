@@ -14,7 +14,7 @@ export const registerUserSchema = z.object({
     .max(32, "Password must not exceed 32 characters"),
 });
 
-export const loginSchema = z.object({
+export const loginUserSchema = z.object({
   email: z.string().email("Invalid email format").toLowerCase(),
   password: z
     .string()

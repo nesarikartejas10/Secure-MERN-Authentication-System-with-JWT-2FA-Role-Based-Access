@@ -135,3 +135,23 @@ export const loginUser = asyncHandler(async (req, res, next) => {
       "If your email is valid, a otp has been sent. It will expire in 5 minutes",
   });
 });
+
+export const verifyOtp = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return next(createHttpError(400, "Please provide all details"));
+  }
+
+  const otpKey = `otp:${email}`;
+  const redisOtp = await redisClient.get(otpKey);
+
+  if (!redisOtp) {
+    return next(createHttpError(410, "Otp is expired"));
+  }
+
+  const storedOtp = JSON.parse(redisOtp);
+  if (storedOtp !== otp) {
+    return next(createHttpError(401, "Invalid Otp"));
+  }
+});

@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     navigate("/login");
+    toast.success("Login successfull! 🎉");
   };
 
   return (

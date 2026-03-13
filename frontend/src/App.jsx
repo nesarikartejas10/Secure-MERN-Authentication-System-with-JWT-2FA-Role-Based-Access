@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 import NotFound from "./pages/auth/NotFound";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/auth/Login";
@@ -12,6 +13,7 @@ const App = () => {
   const isAuth = true;
   return (
     <BrowserRouter>
+      <Toaster position="top-right" expand={true} duration={4000} />
       <Routes>
         <Route path="/" element={isAuth ? <Home /> : <Login />} />
         <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Login />} />

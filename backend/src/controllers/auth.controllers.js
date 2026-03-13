@@ -10,10 +10,6 @@ import { sendMail } from "../utils/sendMail.js";
 export const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.validatedData;
 
-  if (!name || !email || !password) {
-    return next(createHttpError(400, "All fields are required"));
-  }
-
   //ip+email rate limiting
   const rateLimitKey = `register-rate-limit:${req.ip}:${email}`;
   if (await redisClient.get(rateLimitKey)) {
@@ -39,18 +35,18 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
   //data to store in redis
   const dataToStore = JSON.stringify({ name, email, password: hashedPassword });
-  await redisClient(verifyKey, dataToStore, { EX: 5 * 60 }); //5min
+  await redisClient.set(verifyKey, dataToStore, { EX: 5 * 60 }); //5min
 
   //send mail
   const subject = "Verify your email for account creation";
   const html = getVerifyEmailHtml({ email, token: verifyToken });
   await sendMail({ email, subject, html });
 
-  await redisClient.set(rateLimitKey, true, { EX: 60 });
+  await redisClient.set(rateLimitKey, "true", { EX: 60 });
 
-  return res.status(201).json({
+  return res.status(200).json({
     success: true,
-    message: "User registered successfully",
-    data: { name, email, password },
+    message:
+      "If your email is valid, a verification link has been sent. It will expire in 5 minutes",
   });
 });

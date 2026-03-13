@@ -103,4 +103,14 @@ export const loginUser = asyncHandler(async (req, res, next) => {
       createHttpError(429, "Too many requests! Please try again later"),
     );
   }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(createHttpError(401, "Invalid credentials"));
+  }
+
+  const comparePassword = await bcrypt.compare(password, user.password);
+  if (!comparePassword) {
+    return next(createHttpError(401, "Incorrect password"));
+  }
 });

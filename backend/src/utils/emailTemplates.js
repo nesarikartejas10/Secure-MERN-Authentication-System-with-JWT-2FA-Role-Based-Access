@@ -77,7 +77,7 @@ export const getVerifyEmailHtml = ({ email, token }) => {
 
           <!-- Header -->
           <tr>
-            <td align="center" style="background:#111827;padding:18px;color:#ffffff;font-size:16px;font-weight:bold;">
+            <td align="center" style="background:#111827;padding:18px;color:#ffffff;font-size:16px;font-weight:bold;border-top-left-radius: 10px;border-top-right-radius: 10px;">
               ${appName}
             </td>
           </tr>
@@ -94,7 +94,7 @@ export const getVerifyEmailHtml = ({ email, token }) => {
               </p>
 
               <!-- Button -->
-              <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin:20px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:20px 0;">
                 <tr>
                   <td align="center">
                     <a href="${verifyUrl}" target="_blank"

@@ -93,3 +93,7 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
     user: { id: newUser._id, name: newUser.name, email: newUser.email },
   });
 });
+
+export const loginUser = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.validatedData;
+});

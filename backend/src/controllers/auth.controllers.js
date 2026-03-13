@@ -28,10 +28,10 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   //create token
-  const verifyToken = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomBytes(32).toString("hex");
 
   //create verify key
-  const verifyKey = `verify:${verifyToken}`;
+  const verifyKey = `verify:${token}`;
 
   //data to store in redis
   const dataToStore = JSON.stringify({ name, email, password: hashedPassword });
@@ -39,8 +39,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
   //send mail
   const subject = "Verify your email for account creation";
-  const html = getVerifyEmailHtml({ email, token: verifyToken });
-  await sendMail({ email, subject, html });
+  const html = getVerifyEmailHtml({ email, token });
+
+  try {
+    await sendMail({ email, subject, html });
+  } catch (error) {
+    console.log("Error while sending email", error.message);
+  }
 
   await redisClient.set(rateLimitKey, "true", { EX: 60 });
 
@@ -48,5 +53,43 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     success: true,
     message:
       "If your email is valid, a verification link has been sent. It will expire in 5 minutes",
+  });
+});
+
+export const verifyUser = asyncHandler(async (req, res, next) => {
+  const { token } = req.params;
+
+  if (!token) {
+    return next(createHttpError(400, "Verification token is required"));
+  }
+
+  const verifyKey = `verify:${token}`;
+
+  const redisUserData = await redisClient.get(verifyKey);
+
+  if (!redisUserData) {
+    return next(createHttpError(400, "Verification link is expired"));
+  }
+
+  const userData = JSON.parse(redisUserData);
+
+  //check existing user in database
+  const existingUser = await User.findOne({ email: userData.email });
+  if (existingUser) {
+    return next(createHttpError(400, "User already exists"));
+  }
+
+  const newUser = await User.create({
+    name: userData.name,
+    email: userData.email,
+    password: userData.password,
+  });
+
+  await redisClient.del(verifyKey);
+
+  return res.status(201).json({
+    success: true,
+    message: "Email verified successfully! Your account has been created",
+    user: { id: newUser._id, name: newUser.name, email: newUser.email },
   });
 });

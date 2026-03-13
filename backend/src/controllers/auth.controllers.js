@@ -4,7 +4,7 @@ import redisClient from "../config/redis.js";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
-import { getVerifyEmailHtml } from "../utils/emailTemplates.js";
+import { getOtpHtml, getVerifyEmailHtml } from "../utils/emailTemplates.js";
 import { sendMail } from "../utils/sendMail.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
@@ -115,7 +115,23 @@ export const loginUser = asyncHandler(async (req, res, next) => {
   }
 
   const otp = crypto.randomInt(100000, 1000000).toString();
-
   const otpKey = `otp:${otp}`;
   await redisClient.set(otpKey, JSON.stringify(otp), { EX: 5 * 60 });
+
+  const subject = "Your OTP for Verification";
+  const html = getOtpHtml({ email, otp });
+
+  try {
+    await sendMail({ email, subject, html });
+  } catch (error) {
+    console.log("Error while sending mail", error);
+  }
+
+  await redisClient.set(rateLimitKey, "true", { EX: 60 });
+
+  return res.status(200).json({
+    success: true,
+    message:
+      "If your email is valid, a otp has been sent. It will expire in 5 minutes",
+  });
 });

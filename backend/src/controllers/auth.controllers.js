@@ -113,4 +113,9 @@ export const loginUser = asyncHandler(async (req, res, next) => {
   if (!comparePassword) {
     return next(createHttpError(401, "Incorrect password"));
   }
+
+  const otp = crypto.randomInt(100000, 1000000).toString();
+
+  const otpKey = `otp:${otp}`;
+  await redisClient.set(otpKey, JSON.stringify(otp), { EX: 5 * 60 });
 });

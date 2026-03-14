@@ -1,20 +1,20 @@
-import jwt from "jsonebtoken";
+import jwt from "jsonwebtoken";
 import { config } from "../config/envConfig.js";
 import redisClient from "../config/redis.js";
 
-const generateToken = async (id, res) => {
+export const generateToken = async (id, res) => {
   const accessToken = jwt.sign({ id }, config.accessJwtSecret, {
-    exppresIn: "1m",
+    expiresIn: "1m",
   });
 
   const refreshToken = jwt.sign({ id }, config.refreshJwtSecret, {
-    exppresIn: "7d",
+    expiresIn: "7d",
   });
 
   const refreshTokenKey = `refresh_token:${id}`;
   await redisClient.setEx(refreshTokenKey, 7 * 24 * 60 * 60, refreshToken);
 
-  res.cookie("accesstoken", accessToken, {
+  res.cookie("accessToken", accessToken, {
     httpOnly: true,
     // secure: config.env === "production" ? true : false,
     sameSite: "strict",
@@ -27,4 +27,6 @@ const generateToken = async (id, res) => {
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+
+  return { accessToken, refreshToken };
 };

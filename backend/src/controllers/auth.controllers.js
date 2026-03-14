@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import { getOtpHtml, getVerifyEmailHtml } from "../utils/emailTemplates.js";
 import { sendMail } from "../utils/sendMail.js";
+import { generateToken } from "../utils/generateToken.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.validatedData;
@@ -157,5 +158,20 @@ export const verifyOtp = asyncHandler(async (req, res, next) => {
 
   const user = await User.findOne({ email });
 
+  if (!user) {
+    return next(createHttpError(404, "User not found"));
+  }
+
   await redisClient.del(otpKey);
+
+  const tokens = generateToken(user.id, res);
+
+  res
+    .status(200)
+    .json({
+      success: true,
+      message: "OTP verified successfully",
+      user,
+      tokens,
+    });
 });

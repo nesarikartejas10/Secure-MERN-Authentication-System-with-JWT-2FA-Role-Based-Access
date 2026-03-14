@@ -16,8 +16,15 @@ const generateToken = async (id, res) => {
 
   res.cookie("accesstoken", accessToken, {
     httpOnly: true,
-    secure: config.env === "production" ? true : false,
+    // secure: config.env === "production" ? true : false,
     sameSite: "strict",
     maxAge: 1 * 60 * 1000,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    // secure: config.env === "production" ? true : false,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };

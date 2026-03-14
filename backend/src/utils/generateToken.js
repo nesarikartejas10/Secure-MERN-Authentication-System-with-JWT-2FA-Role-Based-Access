@@ -13,4 +13,11 @@ const generateToken = async (id, res) => {
 
   const refreshTokenKey = `refresh_token:${id}`;
   await redisClient.setEx(refreshTokenKey, 7 * 24 * 60 * 60, refreshToken);
+
+  res.cookie("accesstoken", accessToken, {
+    httpOnly: true,
+    secure: config.env === "production" ? true : false,
+    sameSite: "strict",
+    maxAge: 1 * 60 * 1000,
+  });
 };

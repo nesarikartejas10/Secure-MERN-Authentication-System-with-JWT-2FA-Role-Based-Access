@@ -11,6 +11,8 @@ const _config = {
   mailPass: process.env.MAIL_PASS,
   redisURL: process.env.REDIS_URL,
   appName: process.env.APP_NAME,
+  accessJwtSecret: process.env.ACCESS_JWT_SECRET,
+  refreshJwtSecret: process.env.REFRESH_JWT_SECRET,
 };
 
 export const config = Object.freeze(_config);

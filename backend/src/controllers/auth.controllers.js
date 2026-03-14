@@ -154,4 +154,8 @@ export const verifyOtp = asyncHandler(async (req, res, next) => {
   if (storedOtp !== otp) {
     return next(createHttpError(401, "Invalid Otp"));
   }
+
+  const user = await User.findOne({ email });
+
+  await redisClient.del(otpKey);
 });
